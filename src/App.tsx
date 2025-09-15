@@ -58,7 +58,10 @@ function App() {
           resetFilters={resetFilters}
         />
 
-        <SummaryStatsComponent stats={stats} />
+        <SummaryStatsComponent 
+          stats={stats} 
+          data={filteredData}
+        />
 
         <DataTable 
           data={filteredData}
@@ -74,27 +77,28 @@ function App() {
 
         .app-header {
           background: white;
-          padding: 2rem;
+          padding: 12px 16px;
           border-bottom: 1px solid #ddd;
           text-align: center;
         }
 
         .app-header h1 {
-          margin: 0 0 0.5rem 0;
+          margin: 0 0 4px 0;
           color: #333;
-          font-size: 2rem;
+          font-size: 20px;
+          font-weight: 600;
         }
 
         .app-header p {
           margin: 0;
           color: #666;
-          font-size: 1.1rem;
+          font-size: 13px;
         }
 
         .app-main {
-          width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 2rem;
+          padding: 12px;
         }
 
         @media (max-width: 768px) {

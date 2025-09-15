@@ -1,21 +1,21 @@
 import type { KojiRecord, ControlStats, SummaryStats } from '../types/KojiRecord';
 
 export const calculateStats = (values: (string | number)[]): ControlStats => {
-  // 数値データの処理
+  // 数値データの処理（0も除外）
   const numericValues = values
-    .filter(v => v !== null && v !== undefined && v !== '' && v !== '全開' && v !== '全閉')
+    .filter(v => v !== null && v !== undefined && v !== '' && v !== 0 && v !== '全開' && v !== '全閉')
     .map(v => typeof v === 'string' ? parseFloat(v) : v)
-    .filter(v => !isNaN(v));
+    .filter(v => !isNaN(v) && v !== 0);
 
   // 文字列データの処理（全開・全閉）
   const stringValues = values
     .filter(v => v === '全開' || v === '全閉') as string[];
 
-  // 数値統計計算
+  // 数値統計計算（データがない場合の初期化も修正）
   let numericStats = {
-    count: 0,
-    min: 0,
-    max: 0,
+    count: numericValues.length,
+    min: numericValues.length > 0 ? Math.min(...numericValues) : 0,
+    max: numericValues.length > 0 ? Math.max(...numericValues) : 0,
     average: 0,
     median: 0
   };
@@ -27,13 +27,8 @@ export const calculateStats = (values: (string | number)[]): ControlStats => {
       ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
       : sorted[Math.floor(sorted.length / 2)];
 
-    numericStats = {
-      count: numericValues.length,
-      min: Math.min(...numericValues),
-      max: Math.max(...numericValues),
-      average: sum / numericValues.length,
-      median
-    };
+    numericStats.average = sum / numericValues.length;
+    numericStats.median = median;
   }
 
   // 数値の頻出値を計算
@@ -68,13 +63,13 @@ export const calculateStats = (values: (string | number)[]): ControlStats => {
 export const calculateSummaryStats = (records: KojiRecord[]): SummaryStats => {
   return {
     beforeHandling: {
-      ventilation: calculateStats(records.map(r => r.ventilation_stage3)),
-      exhaust: calculateStats(records.map(r => r.exhaust_stage3)),
-      dehumidifier_in: calculateStats(records.map(r => r.dehumidifier_in_stage3)),
-      dehumidifier_out: calculateStats(records.map(r => r.dehumidifier_out_stage3)),
+      ventilation: calculateStats(records.map(r => r.ventilation_before_handling)),
+      exhaust: calculateStats(records.map(r => r.exhaust_before_handling)),
+      dehumidifier_in: calculateStats(records.map(r => r.dehumidifier_in_before_handling)),
+      dehumidifier_out: calculateStats(records.map(r => r.dehumidifier_out_before_handling)),
       heater1: calculateStats(records.map(r => r.heater1_stage3)),
       heater2: calculateStats(records.map(r => r.heater2_stage3)),
-      airflow: calculateStats(records.map(r => r.airflow_stage3))
+      airflow: calculateStats(records.map(r => r.airflow_before_handling))
     },
     afterHandling: {
       ventilation: calculateStats(records.map(r => r.ventilation_stage4)),

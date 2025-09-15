@@ -142,10 +142,10 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
       <style>{`
         .filters-container {
           background: var(--bg-primary);
-          border-radius: var(--radius-xl);
-          padding: 32px;
-          margin-bottom: 32px;
-          box-shadow: var(--shadow-lg);
+          border-radius: var(--radius-md);
+          padding: 20px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           border: 1px solid var(--border);
         }
 
@@ -153,13 +153,13 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 28px;
+          margin-bottom: 16px;
         }
 
         .header-content {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 8px;
         }
 
         .header-content svg {
@@ -169,33 +169,33 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .filters-header h2 {
           margin: 0;
           color: var(--text-primary);
-          font-size: 24px;
-          font-weight: 700;
+          font-size: 18px;
+          font-weight: 600;
         }
 
         .filters-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 24px;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 16px;
         }
 
         .filter-group {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 6px;
         }
 
         .filter-group label {
-          font-weight: 600;
+          font-weight: 500;
           color: var(--text-secondary);
-          font-size: 14px;
+          font-size: 12px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
         .polishing-controls {
           display: flex;
-          gap: 12px;
+          gap: 8px;
           align-items: center;
         }
 
@@ -206,18 +206,19 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .range-indicator {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 4px;
           flex: 1;
         }
 
         .range-indicator span {
-          font-weight: 600;
+          font-weight: 500;
           color: var(--text-secondary);
+          font-size: 12px;
         }
 
         .range-controls {
           display: flex;
-          gap: 12px;
+          gap: 8px;
           align-items: center;
         }
 
@@ -227,31 +228,32 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
 
         .separator {
           color: var(--text-secondary);
-          font-weight: 600;
+          font-weight: 500;
+          font-size: 12px;
         }
 
         .range-preview {
-          font-size: 12px;
+          font-size: 10px;
           color: var(--text-muted);
           font-style: italic;
-          margin-top: 4px;
+          margin-top: 2px;
         }
 
         /* チェックボックスグループのスタイル */
         .checkbox-group {
           display: flex;
           flex-wrap: wrap;
-          gap: 12px;
+          gap: 8px;
         }
 
         .checkbox-item {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 14px;
+          gap: 4px;
+          font-size: 12px;
           cursor: pointer;
-          padding: 6px 8px;
-          border-radius: 6px;
+          padding: 4px 6px;
+          border-radius: 4px;
           transition: background-color 0.2s ease;
         }
 
@@ -262,19 +264,20 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .checkbox-item input[type="checkbox"] {
           margin: 0;
           cursor: pointer;
+          transform: scale(0.9);
         }
 
         .checkbox-label {
           color: var(--text-primary);
-          font-weight: 500;
+          font-weight: 400;
           cursor: pointer;
         }
 
         input, select {
-          padding: 12px 16px;
-          border: 2px solid var(--border);
-          border-radius: var(--radius-md);
-          font-size: 16px;
+          padding: 8px 12px;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-sm);
+          font-size: 14px;
           transition: all 0.2s ease;
           background: white;
           color: var(--text-primary);
@@ -283,20 +286,21 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         input:focus, select:focus {
           outline: none;
           border-color: var(--primary);
-          box-shadow: 0 0 0 3px var(--primary-light);
+          box-shadow: 0 0 0 2px var(--primary-light);
         }
 
         .reset-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 12px 20px;
+          gap: 6px;
+          padding: 8px 16px;
           background: var(--danger);
           color: white;
           border: none;
-          border-radius: var(--radius-md);
+          border-radius: var(--radius-sm);
           cursor: pointer;
-          font-weight: 600;
+          font-weight: 500;
+          font-size: 12px;
           transition: all 0.2s ease;
         }
 
@@ -317,19 +321,34 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
           --primary-light: rgba(59, 130, 246, 0.1);
           --danger: #ef4444;
           --danger-dark: #dc2626;
+          --radius-sm: 4px;
           --radius-md: 8px;
           --radius-xl: 16px;
-          --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 1024px) {
+          .filters-container {
+            padding: 16px;
+          }
+
+          .filters-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+          }
+
+          .filters-header h2 {
+            font-size: 16px;
+          }
         }
 
         @media (max-width: 768px) {
           .filters-container {
-            padding: 20px;
+            padding: 12px;
           }
 
           .filters-grid {
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 12px;
           }
 
           .polishing-controls {
