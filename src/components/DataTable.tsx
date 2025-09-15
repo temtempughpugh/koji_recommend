@@ -1,65 +1,79 @@
-import React, { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { KojiRecord } from '../types/KojiRecord';
+
+interface YearGroup {
+  year: string;
+  label: string;
+  period: string;
+  records: KojiRecord[];
+  isOpen: boolean;
+}
+
+const getBrewingYear = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  
+  if (month >= 6) {
+    return `R${year - 2018}BY`;
+  } else {
+    return `R${year - 2019}BY`;
+  }
+};
+
+const getYearPeriod = (yearLabel: string): string => {
+  const match = yearLabel.match(/R(\d+)BY/);
+  if (!match) return '';
+  
+  const reiwaYear = parseInt(match[1]);
+  const startYear = 2018 + reiwaYear;
+  const endYear = startYear + 1;
+  
+  return `${startYear}/6/1〜${endYear}/5/31`;
+};
+
+const groupByYear = (records: KojiRecord[]): YearGroup[] => {
+  const groups = new Map<string, KojiRecord[]>();
+  
+  records.forEach(record => {
+    const year = getBrewingYear(record.date);
+    if (!groups.has(year)) {
+      groups.set(year, []);
+    }
+    groups.get(year)!.push(record);
+  });
+  
+  const sortedEntries = Array.from(groups.entries()).sort(([a], [b]) => {
+    const aNum = parseInt(a.match(/R(\d+)BY/)?.[1] || '0');
+    const bNum = parseInt(b.match(/R(\d+)BY/)?.[1] || '0');
+    return bNum - aNum;
+  });
+  
+  return sortedEntries.map(([year, records]) => ({
+    year,
+    label: year,
+    period: getYearPeriod(year),
+    records,
+    isOpen: true
+  }));
+};
 
 interface DataTableProps {
   data: KojiRecord[];
   onRowClick: (record: KojiRecord) => void;
 }
 
-interface YearGroup {
-  year: string;
-  records: KojiRecord[];
-  isOpen: boolean;
-}
-
-export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
+export const DataTable: React.FC<DataTableProps> = ({ data }) => {
+  const [yearGroups, setYearGroups] = useState<YearGroup[]>([]);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [dehumidifierUnusedOnly, setDehumidifierUnusedOnly] = useState(false);
 
-  // 除湿機フィルタリング
-  const filteredData = useMemo(() => {
-    if (!dehumidifierUnusedOnly) return data;
-    
-    return data.filter(record => {
-      // 手入れ後の除湿機入り・戻りをチェック（除湿機不使用のみ）
-      const isDehumidifierUnused = (
-        record.dehumidifier_in_stage4 === '全閉' && 
-        record.dehumidifier_out_stage4 === '全閉'
-      );
-      return isDehumidifierUnused;
-    });
-  }, [data, dehumidifierUnusedOnly]);
+  useEffect(() => {
+    setYearGroups(groupByYear(data));
+  }, [data]);
 
-  // 年別グループ化
-  const yearGroups = useMemo(() => {
-    const groups = new Map<string, KojiRecord[]>();
-    
-    filteredData.forEach(record => {
-      const year = record.date.split('/')[0];
-      if (!groups.has(year)) {
-        groups.set(year, []);
-      }
-      groups.get(year)!.push(record);
-    });
-
-    return Array.from(groups.entries())
-      .map(([year, records]) => ({
-        year,
-        records: records.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-        isOpen: true
-      }))
-      .sort((a, b) => parseInt(b.year) - parseInt(a.year));
-  }, [filteredData]);
-
-  const [groupStates, setGroupStates] = useState<YearGroup[]>(yearGroups);
-
-  React.useEffect(() => {
-    setGroupStates(yearGroups);
-  }, [yearGroups]);
-
-  const toggleGroup = (year: string) => {
-    setGroupStates(prev => 
+  const toggleYear = (year: string) => {
+    setYearGroups(prev => 
       prev.map(group => 
         group.year === year 
           ? { ...group, isOpen: !group.isOpen }
@@ -82,8 +96,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
     return value;
   };
 
-  const RecordFormDetail = ({ record }: { record: KojiRecord }) => {
-    return (
+  const RecordFormDetail = ({ record }: { record: KojiRecord }) => (
     <tr className="detail-row">
       <td colSpan={11}>
         <div className="record-form-container">
@@ -144,15 +157,15 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
                   <td className="data-cell">-</td>
                 </tr>
                 <tr>
-                  <td className="time-cell">{record.time_2_3h_check || '-'}</td>
+                  <td className="time-cell">-</td>
                   <td className="operation-cell">2~3h後点検</td>
                   <td className="data-cell">{formatValue(record.temp_2_3h_check)}</td>
                   <td className="data-cell">-</td>
                   <td className="data-cell">-</td>
                   <td className="data-cell">-</td>
                   <td className="data-cell">-</td>
-                  <td className="data-cell">{formatValue(record.heater1_2_3h_check)}</td>
-                  <td className="data-cell">{formatValue(record.heater2_2_3h_check)}</td>
+                  <td className="data-cell">{formatValue(record.heater1_stage3)}</td>
+                  <td className="data-cell">{formatValue(record.heater2_stage3)}</td>
                   <td className="data-cell">-</td>
                 </tr>
                 <tr>
@@ -168,16 +181,16 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
                   <td className="data-cell">{formatValue(record.airflow_stage3)}</td>
                 </tr>
                 <tr>
-                  <td className="time-cell">{record.time_before_handling || '-'}</td>
+                  <td className="time-cell">-</td>
                   <td className="operation-cell">手入れ前</td>
                   <td className="data-cell">{formatValue(record.temp_before_handling)}</td>
-                  <td className="data-cell">{formatValue(record.ventilation_before_handling)}</td>
-                  <td className="data-cell">{formatValue(record.exhaust_before_handling)}</td>
-                  <td className="data-cell">{formatValue(record.dehumidifier_in_before_handling)}</td>
-                  <td className="data-cell">{formatValue(record.dehumidifier_out_before_handling)}</td>
+                  <td className="data-cell">{formatValue(record.ventilation_stage3)}</td>
+                  <td className="data-cell">{formatValue(record.exhaust_stage3)}</td>
+                  <td className="data-cell">{formatValue(record.dehumidifier_in_stage3)}</td>
+                  <td className="data-cell">{formatValue(record.dehumidifier_out_stage3)}</td>
                   <td className="data-cell">41.0</td>
                   <td className="data-cell">41.5</td>
-                  <td className="data-cell">{formatValue(record.airflow_before_handling)}</td>
+                  <td className="data-cell">{formatValue(record.airflow_stage3)}</td>
                 </tr>
                 <tr>
                   <td className="time-cell">-</td>
@@ -211,8 +224,8 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
                   <td className="data-cell">{formatValue(record.exhaust_morning_dehumid)}</td>
                   <td className="data-cell">{formatValue(record.dehumidifier_in_morning)}</td>
                   <td className="data-cell">{formatValue(record.dehumidifier_out_morning)}</td>
-                  <td className="data-cell">-</td>
-                  <td className="data-cell">-</td>
+                  <td className="data-cell">41.5</td>
+                  <td className="data-cell">42.0</td>
                   <td className="data-cell">{formatValue(record.airflow_morning_dehumid)}</td>
                 </tr>
               </tbody>
@@ -221,116 +234,116 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
         </div>
       </td>
     </tr>
+  );
+
+  if (data.length === 0) {
+    return (
+      <div className="no-data">
+        <p>条件に合うデータがありません</p>
+        <style>{`
+          .no-data {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        `}</style>
+      </div>
     );
-  };
+  }
+
+  const totalRecords = data.length;
 
   return (
     <div className="data-table-container">
       <div className="table-header">
         <h2>個別データ一覧</h2>
-        <div className="table-controls">
-          <label className="dehumidifier-filter">
-            <input
-              type="checkbox"
-              checked={dehumidifierUnusedOnly}
-              onChange={(e) => setDehumidifierUnusedOnly(e.target.checked)}
-            />
-            <span>除湿機不使用時を表示</span>
-          </label>
-          <div className="data-count">
-            {filteredData.length}件のデータ
+        <div className="total-badge">{totalRecords}件</div>
+      </div>
+      
+      <div className="year-groups">
+        {yearGroups.map(group => (
+          <div key={group.year} className="year-group">
+            <div 
+              className="year-header" 
+              onClick={() => toggleYear(group.year)}
+            >
+              <div className="year-info">
+                {group.isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+                <span className="year-label">{group.label}</span>
+                <span className="year-period">({group.period})</span>
+              </div>
+              <div className="year-count">{group.records.length}件</div>
+            </div>
+            
+            {group.isOpen && (
+              <div className="table-wrapper">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>日付</th>
+                      <th>品種</th>
+                      <th>精米歩合</th>
+                      <th>枚数</th>
+                      <th>重量</th>
+                      <th>盛り後品温</th>
+                      <th>手入れ後-換気</th>
+                      <th>手入れ後-排気</th>
+                      <th>手入れ後-除湿機入り</th>
+                      <th>手入れ後-除湿機戻り</th>
+                      <th>手入れ後-風量</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.records.map((record, index) => {
+                      const recordId = `${record.date}-${index}`;
+                      return (
+                        <React.Fragment key={recordId}>
+                          <tr 
+                            onClick={() => toggleRowDetail(recordId)}
+                            className="data-row"
+                          >
+                            <td>{record.date}</td>
+                            <td>{record.variety}</td>
+                            <td>{record.polishing_ratio}%</td>
+                            <td>{record.sheets}枚</td>
+                            <td>{record.weight}kg</td>
+                            <td>{formatValue(record.temp_after_steaming)}℃</td>
+                            <td>{formatValue(record.ventilation_stage4)}</td>
+                            <td>{formatValue(record.exhaust_stage4)}</td>
+                            <td>{formatValue(record.dehumidifier_in_stage4)}</td>
+                            <td>{formatValue(record.dehumidifier_out_stage4)}</td>
+                            <td>{formatValue(record.airflow_stage4)}</td>
+                          </tr>
+                          {expandedRow === recordId && <RecordFormDetail record={record} />}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        </div>
+        ))}
       </div>
 
-      {groupStates.map(group => (
-        <div key={group.year} className="year-group">
-          <div 
-            className="year-header"
-            onClick={() => toggleGroup(group.year)}
-          >
-            <div className="year-info">
-              <span className="year-label">{group.year}年</span>
-              <span className="year-period">({group.year}/01 〜 {group.year}/12)</span>
-              <span className="year-count">{group.records.length}件</span>
-            </div>
-            {group.isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          </div>
-
-          {group.isOpen && (
-            <div className="table-wrapper">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>日付</th>
-                    <th>品種</th>
-                    <th>精米歩合</th>
-                    <th>枚数</th>
-                    <th>重量</th>
-                    <th>盛り後品温</th>
-                    <th>換気</th>
-                    <th>排気</th>
-                    <th>除湿機入り</th>
-                    <th>除湿機戻り</th>
-                    <th>風量</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {group.records.map((record) => {
-                    const recordId = `${record.machine}-${record.date}`;
-                    return (
-                      <React.Fragment key={recordId}>
-                        <tr 
-                          className="data-row"
-                          onClick={() => toggleRowDetail(recordId)}
-                        >
-                          <td>{record.date}</td>
-                          <td>{record.variety}</td>
-                          <td>{record.polishing_ratio}%</td>
-                          <td>{record.sheets}枚</td>
-                          <td>{record.weight}kg</td>
-                          <td>{formatValue(record.temp_after_steaming)}℃</td>
-                          <td>{formatValue(record.ventilation_stage4)}</td>
-                          <td>{formatValue(record.exhaust_stage4)}</td>
-                          <td>{formatValue(record.dehumidifier_in_stage4)}</td>
-                          <td>{formatValue(record.dehumidifier_out_stage4)}</td>
-                          <td>{formatValue(record.airflow_stage4)}</td>
-                        </tr>
-                        {expandedRow === recordId && (
-                          <RecordFormDetail record={record} />
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      ))}
-
       <style>{`
-        :root {
-          --bg-primary: #ffffff;
-          --bg-secondary: #f8fafc;
-          --bg-tertiary: #f1f5f9;
-          --text-primary: #1e293b;
-          --text-secondary: #475569;
-          --text-muted: #64748b;
-          --border: #e2e8f0;
-          --primary: #3b82f6;
-          --accent: #10b981;
-          --radius-md: 8px;
-          --radius-xl: 16px;
-          --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
         .data-table-container {
-          background: white;
-          border-radius: var(--radius-xl);
-          padding: 24px;
-          box-shadow: var(--shadow-lg);
+          background: var(--bg-primary);
           border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 32px;
+          margin-bottom: 32px;
+          box-shadow: var(--shadow-md);
+          width: 100%;
+          min-height: 400px;
         }
 
         .table-header {
@@ -338,8 +351,6 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
           justify-content: space-between;
           align-items: center;
           margin-bottom: 24px;
-          flex-wrap: wrap;
-          gap: 16px;
         }
 
         .table-header h2 {
@@ -349,47 +360,22 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
           font-weight: 700;
         }
 
-        .table-controls {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .dehumidifier-filter {
-          display: flex;
-          align-items: center;
-          gap: 8px;
+        .total-badge {
+          background: var(--primary);
+          color: white;
           padding: 8px 16px;
-          background: var(--bg-secondary);
-          border-radius: var(--radius-md);
-          cursor: pointer;
-          border: 1px solid var(--border);
-          transition: all 0.2s ease;
-        }
-
-        .dehumidifier-filter:hover {
-          background: var(--bg-tertiary);
-        }
-
-        .dehumidifier-filter input {
-          margin: 0;
-          cursor: pointer;
-        }
-
-        .dehumidifier-filter span {
+          border-radius: var(--radius-xl);
           font-size: 14px;
-          font-weight: 500;
-          color: var(--text-secondary);
+          font-weight: 600;
         }
 
-        .data-count {
-          font-size: 14px;
-          color: var(--text-muted);
-          font-weight: 500;
+        .year-groups {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
         }
 
         .year-group {
-          margin-bottom: 24px;
           border: 1px solid var(--border);
           border-radius: var(--radius-md);
           overflow: hidden;
@@ -402,7 +388,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
           padding: 16px 20px;
           background: var(--bg-secondary);
           cursor: pointer;
-          transition: background-color 0.2s ease;
+          transition: all 0.2s ease;
         }
 
         .year-header:hover {
@@ -412,7 +398,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
         .year-info {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 12px;
         }
 
         .year-label {
@@ -442,39 +428,23 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
 
         .data-table {
           width: 100%;
-          max-width: 700px;
           border-collapse: collapse;
-          font-size: 12px;
-          table-layout: fixed;
+          font-size: 14px;
         }
 
         .data-table th, 
         .data-table td {
-          padding: 4px 6px;
+          padding: 12px 8px;
           text-align: left;
           border-bottom: 1px solid var(--border);
           white-space: nowrap;
-          font-size: 12px;
         }
-
-        /* 各列の幅を値に合わせて最適化 */
-        .data-table th:nth-child(1), .data-table td:nth-child(1) { width: 80px; }  /* 日付 */
-        .data-table th:nth-child(2), .data-table td:nth-child(2) { width: 70px; }  /* 品種 */
-        .data-table th:nth-child(3), .data-table td:nth-child(3) { width: 50px; }  /* 精米歩合 */
-        .data-table th:nth-child(4), .data-table td:nth-child(4) { width: 35px; }  /* 枚数 */
-        .data-table th:nth-child(5), .data-table td:nth-child(5) { width: 45px; }  /* 重量 */
-        .data-table th:nth-child(6), .data-table td:nth-child(6) { width: 55px; }  /* 品温 */
-        .data-table th:nth-child(7), .data-table td:nth-child(7) { width: 40px; }  /* 換気 */
-        .data-table th:nth-child(8), .data-table td:nth-child(8) { width: 40px; }  /* 排気 */
-        .data-table th:nth-child(9), .data-table td:nth-child(9) { width: 70px; }  /* 除湿機入り */
-        .data-table th:nth-child(10), .data-table td:nth-child(10) { width: 70px; } /* 除湿機戻り */
-        .data-table th:nth-child(11), .data-table td:nth-child(11) { width: 40px; } /* 風量 */
 
         .data-table th {
           background: var(--bg-tertiary);
           font-weight: 600;
           color: var(--text-secondary);
-          font-size: 10px;
+          font-size: 12px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
@@ -593,25 +563,6 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
         .data-table td:nth-child(11) {
           text-align: right;
           font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-        }
-
-        @media (max-width: 768px) {
-          .table-header {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 12px;
-          }
-
-          .table-controls {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 8px;
-          }
-
-          .year-info {
-            flex-wrap: wrap;
-            gap: 8px;
-          }
         }
       `}</style>
     </div>
