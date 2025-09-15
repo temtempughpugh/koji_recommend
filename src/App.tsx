@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import type { KojiRecord } from './types/KojiRecord';
 import { useCsvData } from './hooks/useCsvData';
 import { useFilters } from './hooks/useFilters';
 import { useStats } from './hooks/useStats';
