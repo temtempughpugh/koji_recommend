@@ -27,7 +27,7 @@ const initialFilterState: FilterState = {
   polishing_range: 5,
   weight_min: 0,
   weight_max: 0,
-  sheets: 6
+  sheets: [6] // 6枚をデフォルトでチェック
 };
 
 export const useFilters = (data: KojiRecord[]) => {
@@ -40,7 +40,7 @@ export const useFilters = (data: KojiRecord[]) => {
     return filterRecords(data, debouncedFilters);
   }, [data, debouncedFilters]);
 
-  const updateFilter = (key: keyof FilterState, value: string | number) => {
+  const updateFilter = (key: keyof FilterState, value: string | number | number[]) => {
     setFilters(prev => ({
       ...prev,
       [key]: value

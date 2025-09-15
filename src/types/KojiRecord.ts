@@ -61,7 +61,7 @@ export interface KojiRecord {
   time_to_41c: number;
 }
 
-// 統計データの型
+// 統計データの型（文字列頻出値を追加）
 export interface ControlStats {
   count: number;
   min: number;
@@ -69,6 +69,7 @@ export interface ControlStats {
   average: number;
   median: number;
   frequentValues: Array<{ value: number; count: number }>;
+  frequentStringValues: Array<{ value: string; count: number }>; // 追加
 }
 
 // 要約統計データの型

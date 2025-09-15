@@ -1,29 +1,42 @@
 import type { KojiRecord, ControlStats, SummaryStats } from '../types/KojiRecord';
 
 export const calculateStats = (values: (string | number)[]): ControlStats => {
+  // 数値データの処理
   const numericValues = values
     .filter(v => v !== null && v !== undefined && v !== '' && v !== '全開' && v !== '全閉')
     .map(v => typeof v === 'string' ? parseFloat(v) : v)
     .filter(v => !isNaN(v));
 
-  if (numericValues.length === 0) {
-    return {
-      count: 0,
-      min: 0,
-      max: 0,
-      average: 0,
-      median: 0,
-      frequentValues: []
+  // 文字列データの処理（全開・全閉）
+  const stringValues = values
+    .filter(v => v === '全開' || v === '全閉') as string[];
+
+  // 数値統計計算
+  let numericStats = {
+    count: 0,
+    min: 0,
+    max: 0,
+    average: 0,
+    median: 0
+  };
+
+  if (numericValues.length > 0) {
+    const sorted = [...numericValues].sort((a, b) => a - b);
+    const sum = numericValues.reduce((acc, val) => acc + val, 0);
+    const median = sorted.length % 2 === 0
+      ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+      : sorted[Math.floor(sorted.length / 2)];
+
+    numericStats = {
+      count: numericValues.length,
+      min: Math.min(...numericValues),
+      max: Math.max(...numericValues),
+      average: sum / numericValues.length,
+      median
     };
   }
 
-  const sorted = [...numericValues].sort((a, b) => a - b);
-  const sum = numericValues.reduce((acc, val) => acc + val, 0);
-  const median = sorted.length % 2 === 0
-    ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
-    : sorted[Math.floor(sorted.length / 2)];
-
-  // 頻出値を計算
+  // 数値の頻出値を計算
   const frequencyMap = new Map<number, number>();
   numericValues.forEach(value => {
     const rounded = Math.round(value * 100) / 100;
@@ -35,13 +48,20 @@ export const calculateStats = (values: (string | number)[]): ControlStats => {
     .slice(0, 3)
     .map(([value, count]) => ({ value, count }));
 
+  // 文字列の頻出値を計算
+  const stringFrequencyMap = new Map<string, number>();
+  stringValues.forEach(value => {
+    stringFrequencyMap.set(value, (stringFrequencyMap.get(value) || 0) + 1);
+  });
+
+  const frequentStringValues = Array.from(stringFrequencyMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([value, count]) => ({ value, count }));
+
   return {
-    count: numericValues.length,
-    min: Math.min(...numericValues),
-    max: Math.max(...numericValues),
-    average: sum / numericValues.length,
-    median,
-    frequentValues
+    ...numericStats,
+    frequentValues,
+    frequentStringValues
   };
 };
 

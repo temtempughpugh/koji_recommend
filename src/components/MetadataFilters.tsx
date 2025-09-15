@@ -5,7 +5,7 @@ import type { FilterState, FilterOptions } from '../types/FilterTypes';
 interface MetadataFiltersProps {
   filters: FilterState;
   filterOptions: FilterOptions;
-  updateFilter: (key: keyof FilterState, value: string | number) => void;
+  updateFilter: (key: keyof FilterState, value: string | number | number[]) => void;
   resetFilters: () => void;
 }
 
@@ -15,6 +15,14 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
   updateFilter,
   resetFilters
 }) => {
+  const handleSheetsChange = (sheets: number, checked: boolean) => {
+    if (checked) {
+      updateFilter('sheets', [...filters.sheets, sheets]);
+    } else {
+      updateFilter('sheets', filters.sheets.filter(s => s !== sheets));
+    }
+  };
+
   return (
     <div className="filters-container">
       <div className="filters-header">
@@ -113,18 +121,21 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
           </div>
         </div>
 
-        {/* 枚数 */}
+        {/* 枚数（チェックボックス形式） */}
         <div className="filter-group">
-          <label htmlFor="sheets">枚数以下</label>
-          <select 
-            id="sheets"
-            value={filters.sheets || 6} 
-            onChange={(e) => updateFilter('sheets', Number(e.target.value))}
-          >
+          <label>枚数</label>
+          <div className="checkbox-group">
             {filterOptions.sheets.map(sheets => (
-              <option key={sheets} value={sheets}>{sheets}枚以下</option>
+              <label key={sheets} className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={filters.sheets.includes(sheets)}
+                  onChange={(e) => handleSheetsChange(sheets, e.target.checked)}
+                />
+                <span className="checkbox-label">{sheets}枚</span>
+              </label>
             ))}
-          </select>
+          </div>
         </div>
       </div>
 
@@ -196,40 +207,18 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
           display: flex;
           align-items: center;
           gap: 8px;
-          background: var(--bg-secondary);
-          padding: 8px 12px;
-          border-radius: var(--radius-md);
-          border: 2px solid var(--border);
+          flex: 1;
         }
 
         .range-indicator span {
-          color: var(--text-muted);
           font-weight: 600;
-          font-size: 16px;
-        }
-
-        .range-indicator select {
-          border: none;
-          background: transparent;
-          padding: 4px 8px;
-          font-weight: 600;
-          color: var(--primary);
-        }
-
-        .range-preview {
-          font-size: 12px;
-          color: var(--text-muted);
-          background: var(--bg-tertiary);
-          padding: 6px 12px;
-          border-radius: var(--radius-sm);
-          text-align: center;
-          font-weight: 500;
+          color: var(--text-secondary);
         }
 
         .range-controls {
           display: flex;
-          align-items: center;
           gap: 12px;
+          align-items: center;
         }
 
         .range-controls input {
@@ -237,22 +226,100 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         }
 
         .separator {
-          color: var(--text-muted);
+          color: var(--text-secondary);
           font-weight: 600;
+        }
+
+        .range-preview {
+          font-size: 12px;
+          color: var(--text-muted);
+          font-style: italic;
+          margin-top: 4px;
+        }
+
+        /* チェックボックスグループのスタイル */
+        .checkbox-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .checkbox-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 14px;
+          cursor: pointer;
+          padding: 6px 8px;
+          border-radius: 6px;
+          transition: background-color 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+          background: var(--bg-secondary);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+          margin: 0;
+          cursor: pointer;
+        }
+
+        .checkbox-label {
+          color: var(--text-primary);
+          font-weight: 500;
+          cursor: pointer;
+        }
+
+        input, select {
+          padding: 12px 16px;
+          border: 2px solid var(--border);
+          border-radius: var(--radius-md);
           font-size: 16px;
-          padding: 0 4px;
+          transition: all 0.2s ease;
+          background: white;
+          color: var(--text-primary);
+        }
+
+        input:focus, select:focus {
+          outline: none;
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px var(--primary-light);
         }
 
         .reset-btn {
-          background: var(--secondary);
-          color: white;
+          display: flex;
+          align-items: center;
+          gap: 8px;
           padding: 12px 20px;
-          font-size: 14px;
+          background: var(--danger);
+          color: white;
+          border: none;
+          border-radius: var(--radius-md);
+          cursor: pointer;
           font-weight: 600;
+          transition: all 0.2s ease;
         }
 
         .reset-btn:hover {
-          background: #5a6268;
+          background: var(--danger-dark);
+          transform: translateY(-1px);
+        }
+
+        :root {
+          --bg-primary: #ffffff;
+          --bg-secondary: #f8fafc;
+          --bg-tertiary: #f1f5f9;
+          --text-primary: #1e293b;
+          --text-secondary: #475569;
+          --text-muted: #64748b;
+          --border: #e2e8f0;
+          --primary: #3b82f6;
+          --primary-light: rgba(59, 130, 246, 0.1);
+          --danger: #ef4444;
+          --danger-dark: #dc2626;
+          --radius-md: 8px;
+          --radius-xl: 16px;
+          --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         @media (max-width: 768px) {
@@ -265,14 +332,18 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
             gap: 20px;
           }
 
-          .filters-header {
+          .polishing-controls {
             flex-direction: column;
-            gap: 16px;
             align-items: stretch;
           }
 
-          .filters-header h2 {
-            font-size: 20px;
+          .range-controls {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .checkbox-group {
+            grid-template-columns: repeat(2, 1fr);
           }
         }
       `}</style>

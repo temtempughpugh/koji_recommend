@@ -30,8 +30,8 @@ export const filterRecords = (records: KojiRecord[], filters: FilterState): Koji
       return false;
     }
 
-    // 枚数フィルター（以下）
-    if (filters.sheets > 0 && record.sheets > filters.sheets) {
+    // 枚数フィルター（選択された枚数のみ表示）
+    if (filters.sheets.length > 0 && !filters.sheets.includes(record.sheets)) {
       return false;
     }
 

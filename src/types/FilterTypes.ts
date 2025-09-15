@@ -6,7 +6,7 @@ export interface FilterState {
   polishing_range: number; // ±範囲
   weight_min: number;
   weight_max: number;
-  sheets: number;
+  sheets: number[]; // 数値から配列に変更
 }
 
 export interface FilterOptions {
