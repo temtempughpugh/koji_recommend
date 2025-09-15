@@ -27,11 +27,11 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
     <div className="filters-container">
       <div className="filters-header">
         <div className="header-content">
-          <Search size={24} />
+          <Search size={20} />
           <h2>メタデータ選択</h2>
         </div>
         <button className="reset-btn" onClick={resetFilters}>
-          <RotateCcw size={16} />
+          <RotateCcw size={14} />
           リセット
         </button>
       </div>
@@ -69,54 +69,50 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
 
         {/* 精米歩合 */}
         <div className="filter-group">
-          <label>精米歩合</label>
+          <label htmlFor="polishing_ratio">精米歩合</label>
           <div className="polishing-controls">
-            <input 
-              type="number" 
-              value={filters.polishing_ratio || ''} 
-              onChange={(e) => updateFilter('polishing_ratio', Number(e.target.value))}
-              placeholder="70"
-              min="0"
-              max="100"
+            <input
+              id="polishing_ratio"
+              type="number"
+              placeholder="精米歩合"
+              value={filters.polishing_ratio || ''}
+              onChange={(e) => updateFilter('polishing_ratio', parseInt(e.target.value) || 0)}
             />
             <div className="range-indicator">
               <span>±</span>
-              <select 
-                value={filters.polishing_range}
-                onChange={(e) => updateFilter('polishing_range', Number(e.target.value))}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
             </div>
+            <input
+              type="number"
+              placeholder="範囲"
+              value={filters.polishing_range || ''}
+              onChange={(e) => updateFilter('polishing_range', parseInt(e.target.value) || 0)}
+              step="5"
+              min="0"
+            />
           </div>
           {filters.polishing_ratio > 0 && (
             <div className="range-preview">
-              {filters.polishing_ratio - filters.polishing_range}% 〜 {filters.polishing_ratio + filters.polishing_range}%
+              {filters.polishing_ratio - filters.polishing_range}% ～ {filters.polishing_ratio + filters.polishing_range}%
             </div>
           )}
         </div>
 
         {/* 重量範囲 */}
         <div className="filter-group">
-          <label>重量 (kg)</label>
+          <label>重量範囲</label>
           <div className="range-controls">
-            <input 
-              type="number" 
-              value={filters.weight_min || ''} 
-              onChange={(e) => updateFilter('weight_min', Number(e.target.value))}
+            <input
+              type="number"
               placeholder="最小"
-              min="0"
+              value={filters.weight_min || ''}
+              onChange={(e) => updateFilter('weight_min', parseInt(e.target.value) || 0)}
             />
-            <span className="separator">〜</span>
-            <input 
-              type="number" 
-              value={filters.weight_max || ''} 
-              onChange={(e) => updateFilter('weight_max', Number(e.target.value))}
+            <span className="separator">～</span>
+            <input
+              type="number"
               placeholder="最大"
-              min="0"
+              value={filters.weight_max || ''}
+              onChange={(e) => updateFilter('weight_max', parseInt(e.target.value) || 0)}
             />
           </div>
         </div>
@@ -140,11 +136,28 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
       </div>
 
       <style>{`
+        :root {
+          --bg-primary: #ffffff;
+          --bg-secondary: #f8fafc;
+          --bg-tertiary: #f1f5f9;
+          --text-primary: #1e293b;
+          --text-secondary: #475569;
+          --text-muted: #64748b;
+          --border: #e2e8f0;
+          --primary: #3b82f6;
+          --primary-light: rgba(59, 130, 246, 0.1);
+          --danger: #ef4444;
+          --danger-dark: #dc2626;
+          --radius-sm: 4px;
+          --radius-md: 8px;
+          --radius-xl: 16px;
+        }
+
         .filters-container {
           background: var(--bg-primary);
           border-radius: var(--radius-md);
-          padding: 20px;
-          margin-bottom: 20px;
+          padding: 16px;
+          margin-bottom: 16px;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           border: 1px solid var(--border);
         }
@@ -169,14 +182,33 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .filters-header h2 {
           margin: 0;
           color: var(--text-primary);
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 600;
+        }
+
+        .reset-btn {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 6px 12px;
+          background: var(--danger);
+          color: white;
+          border: none;
+          border-radius: var(--radius-sm);
+          cursor: pointer;
+          font-weight: 500;
+          font-size: 11px;
+          transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+          background: var(--danger-dark);
         }
 
         .filters-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 16px;
+          gap: 12px;
         }
 
         .filter-group {
@@ -188,48 +220,51 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .filter-group label {
           font-weight: 500;
           color: var(--text-secondary);
-          font-size: 12px;
+          font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
         .polishing-controls {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           align-items: center;
         }
 
         .polishing-controls input {
-          flex: 2;
+          width: 70px;
         }
 
         .range-indicator {
           display: flex;
           align-items: center;
-          gap: 4px;
-          flex: 1;
+          gap: 2px;
+          min-width: 20px;
+          justify-content: center;
         }
 
         .range-indicator span {
           font-weight: 500;
           color: var(--text-secondary);
-          font-size: 12px;
+          font-size: 11px;
         }
 
         .range-controls {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           align-items: center;
         }
 
         .range-controls input {
-          flex: 1;
+          width: 60px;
         }
 
         .separator {
           color: var(--text-secondary);
           font-weight: 500;
-          font-size: 12px;
+          font-size: 11px;
+          min-width: 20px;
+          text-align: center;
         }
 
         .range-preview {
@@ -243,14 +278,14 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .checkbox-group {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 6px;
         }
 
         .checkbox-item {
           display: flex;
           align-items: center;
           gap: 4px;
-          font-size: 12px;
+          font-size: 11px;
           cursor: pointer;
           padding: 4px 6px;
           border-radius: 4px;
@@ -274,14 +309,23 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         }
 
         input, select {
-          padding: 4px 6px;
+          padding: 6px 8px;
           border: 1px solid var(--border);
           border-radius: var(--radius-sm);
-          font-size: 12px;
+          font-size: 11px;
           transition: all 0.2s ease;
           background: white;
           color: var(--text-primary);
-          height: 28px;
+          height: 32px;
+        }
+
+        /* 特定の入力欄の幅を値に合わせて最適化 */
+        select {
+          min-width: 100px;
+        }
+
+        input[type="number"] {
+          width: 70px;
         }
 
         input:focus, select:focus {
@@ -290,80 +334,169 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
           box-shadow: 0 0 0 2px var(--primary-light);
         }
 
-        .reset-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 16px;
-          background: var(--danger);
-          color: white;
-          border: none;
-          border-radius: var(--radius-sm);
-          cursor: pointer;
-          font-weight: 500;
-          font-size: 12px;
-          transition: all 0.2s ease;
+        input::placeholder {
+          color: var(--text-muted);
+          opacity: 0.8;
         }
 
-        .reset-btn:hover {
-          background: var(--danger-dark);
-          transform: translateY(-1px);
-        }
-
-        :root {
-          --bg-primary: #ffffff;
-          --bg-secondary: #f8fafc;
-          --bg-tertiary: #f1f5f9;
-          --text-primary: #1e293b;
-          --text-secondary: #475569;
-          --text-muted: #64748b;
-          --border: #e2e8f0;
-          --primary: #3b82f6;
-          --primary-light: rgba(59, 130, 246, 0.1);
-          --danger: #ef4444;
-          --danger-dark: #dc2626;
-          --radius-sm: 4px;
-          --radius-md: 8px;
-          --radius-xl: 16px;
-        }
-
-        @media (max-width: 1024px) {
-          .filters-container {
-            padding: 16px;
-          }
-
-          .filters-grid {
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-          }
-
-          .filters-header h2 {
-            font-size: 16px;
-          }
-        }
-
+        /* レスポンシブ対応 */
         @media (max-width: 768px) {
           .filters-container {
             padding: 12px;
+            margin-bottom: 12px;
+          }
+
+          .filters-header {
+            margin-bottom: 12px;
+          }
+
+          .filters-header h2 {
+            font-size: 14px;
+          }
+
+          .reset-btn {
+            padding: 4px 8px;
+            font-size: 10px;
           }
 
           .filters-grid {
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 10px;
+          }
+
+          .filter-group {
+            gap: 4px;
+          }
+
+          .filter-group label {
+            font-size: 10px;
+          }
+
+          .polishing-controls {
+            gap: 4px;
+          }
+
+          .polishing-controls input {
+            width: 60px;
+          }
+
+          .range-controls input {
+            width: 50px;
+          }
+
+          .checkbox-group {
+            gap: 4px;
+          }
+
+          .checkbox-item {
+            padding: 3px 5px;
+            font-size: 10px;
+          }
+
+          input, select {
+            padding: 4px 6px;
+            font-size: 10px;
+            height: 28px;
+          }
+
+          select {
+            min-width: 80px;
+          }
+
+          input[type="number"] {
+            width: 60px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .filters-container {
+            padding: 8px;
+          }
+
+          .filters-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            margin-bottom: 10px;
+          }
+
+          .header-content {
+            justify-content: center;
+          }
+
+          .filters-header h2 {
+            font-size: 13px;
+            text-align: center;
+          }
+
+          .reset-btn {
+            align-self: center;
+            padding: 3px 6px;
+            font-size: 9px;
+          }
+
+          .filters-grid {
+            gap: 8px;
+          }
+
+          .filter-group label {
+            font-size: 9px;
           }
 
           .polishing-controls {
             flex-direction: column;
             align-items: stretch;
+            gap: 4px;
+          }
+
+          .polishing-controls input {
+            width: 100%;
+          }
+
+          .range-indicator {
+            justify-content: center;
+            padding: 2px 0;
           }
 
           .range-controls {
             flex-direction: column;
             align-items: stretch;
+            gap: 4px;
+          }
+
+          .range-controls input {
+            width: 100%;
+          }
+
+          .separator {
+            text-align: center;
+            padding: 2px 0;
           }
 
           .checkbox-group {
+            display: grid;
             grid-template-columns: repeat(2, 1fr);
+            gap: 3px;
+          }
+
+          .checkbox-item {
+            padding: 2px 4px;
+            font-size: 9px;
+          }
+
+          input, select {
+            padding: 3px 4px;
+            font-size: 9px;
+            height: 24px;
+          }
+
+          select {
+            min-width: auto;
+            width: 100%;
+          }
+
+          input[type="number"] {
+            width: 100%;
           }
         }
       `}</style>

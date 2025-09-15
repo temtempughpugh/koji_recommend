@@ -73,6 +73,9 @@ function App() {
         .app {
           min-height: 100vh;
           background: #f5f5f5;
+          margin: 0;
+          padding: 0;
+          width: 100vw;  /* 画面幅100%で全画面表示 */
         }
 
         .app-header {
@@ -95,27 +98,54 @@ function App() {
           font-size: 13px;
         }
 
+        /* 可変幅設定 - 画面サイズに自動適応、縦の変動は防止 */
         .app-main {
-          max-width: 1400px;
           margin: 0 auto;
           padding: 12px;
+          min-height: calc(100vh - 100px); /* 高さ固定で縦の変動防止 */
+          
+          /* 画面幅に応じた可変設定 */
+          width: min(95vw, 1400px);  /* 画面幅95%、最大1400px */
+          min-width: 320px;          /* 最小幅でデータ表示保証 */
         }
 
+        /* タブレット・スマートフォンでの調整 */
         @media (max-width: 768px) {
+          .app-main {
+            width: min(98vw, 600px);  /* 小画面では98%使用 */
+            padding: 8px;
+          }
+          
           .app-header {
-            padding: 1.5rem 1rem;
+            padding: 10px 8px;
           }
 
           .app-header h1 {
-            font-size: 1.5rem;
+            font-size: 18px;
           }
 
           .app-header p {
-            font-size: 1rem;
+            font-size: 12px;
+          }
+        }
+
+        /* スマートフォン */
+        @media (max-width: 480px) {
+          .app-main {
+            width: min(99vw, 400px);
+            padding: 6px;
+          }
+          
+          .app-header {
+            padding: 8px 6px;
           }
 
-          .app-main {
-            padding: 1rem;
+          .app-header h1 {
+            font-size: 16px;
+          }
+
+          .app-header p {
+            font-size: 11px;
           }
         }
       `}</style>

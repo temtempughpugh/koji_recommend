@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { KojiRecord } from '../types/KojiRecord';
 
@@ -67,10 +67,25 @@ interface DataTableProps {
 export const DataTable: React.FC<DataTableProps> = ({ data }) => {
   const [yearGroups, setYearGroups] = useState<YearGroup[]>([]);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [dehumidifierUnusedOnly, setDehumidifierUnusedOnly] = useState(false);
+
+  // 除湿機フィルタリング
+  const filteredData = useMemo(() => {
+    if (!dehumidifierUnusedOnly) return data;
+    
+    return data.filter(record => {
+      // 手入れ後の除湿機入り・戻りをチェック（除湿機不使用のみ）
+      const isDehumidifierUnused = (
+        record.dehumidifier_in_stage4 === '全閉' && 
+        record.dehumidifier_out_stage4 === '全閉'
+      );
+      return isDehumidifierUnused;
+    });
+  }, [data, dehumidifierUnusedOnly]);
 
   useEffect(() => {
-    setYearGroups(groupByYear(data));
-  }, [data]);
+    setYearGroups(groupByYear(filteredData));
+  }, [filteredData]);
 
   const toggleYear = (year: string) => {
     setYearGroups(prev => 
@@ -164,8 +179,8 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                   <td className="data-cell">-</td>
                   <td className="data-cell">-</td>
                   <td className="data-cell">-</td>
-                  <td className="data-cell">{formatValue(record.heater1_stage3)}</td>
-                  <td className="data-cell">{formatValue(record.heater2_stage3)}</td>
+                  <td className="data-cell">{formatValue(record.heater1_2_3h_check)}</td>
+                  <td className="data-cell">{formatValue(record.heater2_2_3h_check)}</td>
                   <td className="data-cell">-</td>
                 </tr>
                 <tr>
@@ -184,13 +199,13 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                   <td className="time-cell">-</td>
                   <td className="operation-cell">手入れ前</td>
                   <td className="data-cell">{formatValue(record.temp_before_handling)}</td>
-                  <td className="data-cell">{formatValue(record.ventilation_stage3)}</td>
-                  <td className="data-cell">{formatValue(record.exhaust_stage3)}</td>
-                  <td className="data-cell">{formatValue(record.dehumidifier_in_stage3)}</td>
-                  <td className="data-cell">{formatValue(record.dehumidifier_out_stage3)}</td>
+                  <td className="data-cell">{formatValue(record.ventilation_before_handling)}</td>
+                  <td className="data-cell">{formatValue(record.exhaust_before_handling)}</td>
+                  <td className="data-cell">{formatValue(record.dehumidifier_in_before_handling)}</td>
+                  <td className="data-cell">{formatValue(record.dehumidifier_out_before_handling)}</td>
                   <td className="data-cell">41.0</td>
                   <td className="data-cell">41.5</td>
-                  <td className="data-cell">{formatValue(record.airflow_stage3)}</td>
+                  <td className="data-cell">{formatValue(record.airflow_before_handling)}</td>
                 </tr>
                 <tr>
                   <td className="time-cell">-</td>
@@ -236,7 +251,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
     </tr>
   );
 
-  if (data.length === 0) {
+  if (filteredData.length === 0) {
     return (
       <div className="no-data">
         <p>条件に合うデータがありません</p>
@@ -259,13 +274,23 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
     );
   }
 
-  const totalRecords = data.length;
-
   return (
     <div className="data-table-container">
       <div className="table-header">
         <h2>個別データ一覧</h2>
-        <div className="total-badge">{totalRecords}件</div>
+        <div className="table-controls">
+          <label className="dehumidifier-filter">
+            <input
+              type="checkbox"
+              checked={dehumidifierUnusedOnly}
+              onChange={(e) => setDehumidifierUnusedOnly(e.target.checked)}
+            />
+            <span>除湿機不使用時を表示</span>
+          </label>
+          <div className="data-count">
+            {filteredData.length}件のデータ
+          </div>
+        </div>
       </div>
       
       <div className="year-groups">
@@ -335,6 +360,22 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
       </div>
 
       <style>{`
+        :root {
+          --bg-primary: #ffffff;
+          --bg-secondary: #f8fafc;
+          --bg-tertiary: #f1f5f9;
+          --text-primary: #1e293b;
+          --text-secondary: #475569;
+          --text-muted: #64748b;
+          --border: #e2e8f0;
+          --primary: #3b82f6;
+          --accent: #10b981;
+          --radius-md: 8px;
+          --radius-xl: 16px;
+          --radius-lg: 12px;
+          --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
         .data-table-container {
           background: var(--bg-primary);
           border: 1px solid var(--border);
@@ -351,6 +392,8 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
           justify-content: space-between;
           align-items: center;
           margin-bottom: 24px;
+          flex-wrap: wrap;
+          gap: 16px;
         }
 
         .table-header h2 {
@@ -360,13 +403,43 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
           font-weight: 700;
         }
 
-        .total-badge {
-          background: var(--primary);
-          color: white;
+        .table-controls {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .dehumidifier-filter {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           padding: 8px 16px;
-          border-radius: var(--radius-xl);
+          background: var(--bg-secondary);
+          border-radius: var(--radius-md);
+          cursor: pointer;
+          border: 1px solid var(--border);
+          transition: all 0.2s ease;
+        }
+
+        .dehumidifier-filter:hover {
+          background: var(--bg-tertiary);
+        }
+
+        .dehumidifier-filter input {
+          margin: 0;
+          cursor: pointer;
+        }
+
+        .dehumidifier-filter span {
           font-size: 14px;
-          font-weight: 600;
+          font-weight: 500;
+          color: var(--text-secondary);
+        }
+
+        .data-count {
+          font-size: 14px;
+          color: var(--text-muted);
+          font-weight: 500;
         }
 
         .year-groups {
@@ -444,10 +517,26 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
           background: var(--bg-tertiary);
           font-weight: 600;
           color: var(--text-secondary);
-          font-size: 12px;
+          font-size: 10px;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.3px;
+          white-space: normal;
+          line-height: 1.2;
+          padding: 8px 4px;
         }
+
+        /* 各列の幅を実際の値に合わせて最適化 */
+        .data-table th:nth-child(1), .data-table td:nth-child(1) { width: 85px; }  /* 日付: 2024/10/14 */
+        .data-table th:nth-child(2), .data-table td:nth-child(2) { width: 50px; }  /* 品種: 八反錦 */
+        .data-table th:nth-child(3), .data-table td:nth-child(3) { width: 40px; }  /* 精米歩合: 60% */
+        .data-table th:nth-child(4), .data-table td:nth-child(4) { width: 30px; }  /* 枚数: 6枚 */
+        .data-table th:nth-child(5), .data-table td:nth-child(5) { width: 50px; }  /* 重量: 135kg */
+        .data-table th:nth-child(6), .data-table td:nth-child(6) { width: 60px; }  /* 品温: 32.02℃ */
+        .data-table th:nth-child(7), .data-table td:nth-child(7) { width: 45px; }  /* 換気: 0.90 */
+        .data-table th:nth-child(8), .data-table td:nth-child(8) { width: 45px; }  /* 排気: 1.70 */
+        .data-table th:nth-child(9), .data-table td:nth-child(9) { width: 45px; }  /* 除湿機入り: 2.50 */
+        .data-table th:nth-child(10), .data-table td:nth-child(10) { width: 45px; } /* 除湿機戻り: 全開 */
+        .data-table th:nth-child(11), .data-table td:nth-child(11) { width: 45px; } /* 風量: 6.20 */
 
         .data-row {
           cursor: pointer;
@@ -563,6 +652,177 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
         .data-table td:nth-child(11) {
           text-align: right;
           font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        }
+
+        @media (max-width: 768px) {
+          .data-table-container {
+            padding: 16px;
+            margin-bottom: 16px;
+          }
+
+          .table-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+
+          .table-header h2 {
+            font-size: 20px;
+            text-align: center;
+          }
+
+          .table-controls {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+          }
+
+          .dehumidifier-filter {
+            justify-content: center;
+          }
+
+          .year-header {
+            padding: 12px 16px;
+          }
+
+          .year-info {
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+
+          .year-label {
+            font-size: 16px;
+          }
+
+          .year-period {
+            font-size: 12px;
+          }
+
+          .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .data-table {
+            min-width: 600px;
+            font-size: 12px;
+          }
+
+          .data-table th,
+          .data-table td {
+            padding: 8px 4px;
+            font-size: 10px;
+          }
+
+          /* モバイル用セル幅調整 */
+          .data-table th:nth-child(1), .data-table td:nth-child(1) { width: 80px; }
+          .data-table th:nth-child(2), .data-table td:nth-child(2) { width: 45px; }
+          .data-table th:nth-child(3), .data-table td:nth-child(3) { width: 35px; }
+          .data-table th:nth-child(4), .data-table td:nth-child(4) { width: 25px; }
+          .data-table th:nth-child(5), .data-table td:nth-child(5) { width: 45px; }
+          .data-table th:nth-child(6), .data-table td:nth-child(6) { width: 55px; }
+          .data-table th:nth-child(7), .data-table td:nth-child(7) { width: 40px; }
+          .data-table th:nth-child(8), .data-table td:nth-child(8) { width: 40px; }
+          .data-table th:nth-child(9), .data-table td:nth-child(9) { width: 40px; }
+          .data-table th:nth-child(10), .data-table td:nth-child(10) { width: 40px; }
+          .data-table th:nth-child(11), .data-table td:nth-child(11) { width: 40px; }
+
+          .record-form-container {
+            padding: 16px;
+            margin: 4px;
+          }
+
+          .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+          }
+
+          .info-label {
+            min-width: auto;
+            width: 100%;
+          }
+
+          .record-table-container {
+            margin-top: 16px;
+          }
+
+          .record-table {
+            font-size: 11px;
+          }
+
+          .record-table th,
+          .record-table td {
+            padding: 6px 4px;
+            font-size: 10px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .data-table-container {
+            padding: 12px;
+          }
+
+          .table-header h2 {
+            font-size: 18px;
+          }
+
+          .year-header {
+            padding: 10px 12px;
+          }
+
+          .year-label {
+            font-size: 14px;
+          }
+
+          .year-count {
+            font-size: 10px;
+            padding: 2px 8px;
+          }
+
+          .data-table {
+            min-width: 550px;
+            font-size: 11px;
+          }
+
+          .data-table th,
+          .data-table td {
+            padding: 6px 2px;
+            font-size: 9px;
+          }
+
+          /* 極小画面用セル幅調整 */
+          .data-table th:nth-child(1), .data-table td:nth-child(1) { width: 75px; }
+          .data-table th:nth-child(2), .data-table td:nth-child(2) { width: 40px; }
+          .data-table th:nth-child(3), .data-table td:nth-child(3) { width: 30px; }
+          .data-table th:nth-child(4), .data-table td:nth-child(4) { width: 20px; }
+          .data-table th:nth-child(5), .data-table td:nth-child(5) { width: 40px; }
+          .data-table th:nth-child(6), .data-table td:nth-child(6) { width: 50px; }
+          .data-table th:nth-child(7), .data-table td:nth-child(7) { width: 35px; }
+          .data-table th:nth-child(8), .data-table td:nth-child(8) { width: 35px; }
+          .data-table th:nth-child(9), .data-table td:nth-child(9) { width: 35px; }
+          .data-table th:nth-child(10), .data-table td:nth-child(10) { width: 35px; }
+          .data-table th:nth-child(11), .data-table td:nth-child(11) { width: 35px; }
+
+          .record-form-container {
+            padding: 12px;
+            margin: 2px;
+          }
+
+          .record-table {
+            font-size: 10px;
+          }
+
+          .record-table th,
+          .record-table td {
+            padding: 4px 2px;
+            font-size: 9px;
+          }
+
+          .time-col { width: 40px; }
+          .operation-col { width: 80px; }
+          .temp-col { width: 50px; }
+          .control-col { width: 60px; }
         }
       `}</style>
     </div>

@@ -66,6 +66,7 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
 /* リセットとベーススタイル */
 * {
   margin: 0;
@@ -77,8 +78,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
   color: #1a202c;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: white;  /* 白背景で余白なし */
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;  /* 横スクロールバー防止 */
 }
 
 /* カスタムプロパティ */
@@ -214,25 +218,59 @@ button:active {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* ==================================================
+   可変幅設定 - 画面サイズに自動適応、データ量変化での縦変動防止
+   ================================================== */
+
+/* 基本設定 - 親コンテナに合わせて可変 */
 .data-table {
-  width: 1000px; /* 固定幅 */
-  min-width: 1000px; /* 最小幅 */
+  width: 100%;
+  min-width: 300px;
+  max-width: 100%;
 }
 
 .summary-stats table {
-  width: 800px; /* 固定幅 */
+  width: 100%;
+  max-width: 100%;
 }
+
 .data-table-container {
-  min-height: 600px; /* 固定の最小高さ */
-  width: 1100px;     /* 固定幅 */
+  min-height: 600px;  /* 縦の安定性維持 */
+  width: 100%;
+  overflow-x: auto;   /* 必要に応じて横スクロール */
 }
 
 .no-data {
-  min-height: 600px; /* データなしでも同じ高さ */
+  min-height: 600px;  /* データなしでも同じ高さ */
 }
 
-.app-main {
-  width: 1200px !important;
-  min-width: 1200px !important;
-  max-width: 1200px !important;
+/* タブレット・スマートフォンでの最適化 */
+@media (max-width: 768px) {
+  .data-table-container {
+    min-height: 500px;
+  }
+
+  .no-data {
+    min-height: 500px;
+  }
+  
+  .data-table {
+    min-width: 280px;
+  }
+}
+
+/* スマートフォン */
+@media (max-width: 480px) {
+  .data-table-container {
+    min-height: 400px;
+  }
+
+  .no-data {
+    min-height: 400px;
+  }
+  
+  .data-table {
+    min-width: 250px;
+  }
 }
