@@ -380,24 +380,24 @@ export const SummaryStatsComponent: React.FC<SummaryStatsProps> = ({ stats, data
 
         .toggle-controls {
           display: flex;
-          gap: 16px;
-          margin-bottom: 16px;
-          flex-wrap: wrap;
+          gap: 8px;
+          align-items: center;
+          margin-bottom: 8px;
         }
 
         .toggle-controls label {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 3px;
+          font-size: 12px;
+          color: var(--text-secondary);
           cursor: pointer;
-          font-size: 13px;
-          padding: 4px 8px;
-          border-radius: 4px;
-          transition: background-color 0.2s ease;
+          white-space: nowrap;
         }
 
-        .toggle-controls label:hover {
-          background: #f8fafc;
+        .toggle-controls input[type="checkbox"] {
+          margin: 0;
+          transform: scale(0.8);
         }
 
         .toggle-controls input {
@@ -423,9 +423,10 @@ export const SummaryStatsComponent: React.FC<SummaryStatsProps> = ({ stats, data
 
         table {
           width: 100%;
+          min-width: 1000px;
           border-collapse: collapse;
-          font-size: 12px;
-          min-width: 600px;
+          background: white;
+          font-size: 14px;
         }
 
         th, td {

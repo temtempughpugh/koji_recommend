@@ -442,17 +442,33 @@ export const DataTable: React.FC<DataTableProps> = ({ data, onRowClick }) => {
 
         .data-table {
           width: 100%;
+          max-width: 700px;
           border-collapse: collapse;
           font-size: 12px;
+          table-layout: fixed;
         }
 
         .data-table th, 
         .data-table td {
-          padding: 4px 3px;
+          padding: 4px 6px;
           text-align: left;
           border-bottom: 1px solid var(--border);
           white-space: nowrap;
+          font-size: 12px;
         }
+
+        /* 各列の幅を値に合わせて最適化 */
+        .data-table th:nth-child(1), .data-table td:nth-child(1) { width: 80px; }  /* 日付 */
+        .data-table th:nth-child(2), .data-table td:nth-child(2) { width: 70px; }  /* 品種 */
+        .data-table th:nth-child(3), .data-table td:nth-child(3) { width: 50px; }  /* 精米歩合 */
+        .data-table th:nth-child(4), .data-table td:nth-child(4) { width: 35px; }  /* 枚数 */
+        .data-table th:nth-child(5), .data-table td:nth-child(5) { width: 45px; }  /* 重量 */
+        .data-table th:nth-child(6), .data-table td:nth-child(6) { width: 55px; }  /* 品温 */
+        .data-table th:nth-child(7), .data-table td:nth-child(7) { width: 40px; }  /* 換気 */
+        .data-table th:nth-child(8), .data-table td:nth-child(8) { width: 40px; }  /* 排気 */
+        .data-table th:nth-child(9), .data-table td:nth-child(9) { width: 70px; }  /* 除湿機入り */
+        .data-table th:nth-child(10), .data-table td:nth-child(10) { width: 70px; } /* 除湿機戻り */
+        .data-table th:nth-child(11), .data-table td:nth-child(11) { width: 40px; } /* 風量 */
 
         .data-table th {
           background: var(--bg-tertiary);

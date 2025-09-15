@@ -27,11 +27,11 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
     <div className="filters-container">
       <div className="filters-header">
         <div className="header-content">
-          <Search size={24} />
+          <Search size={20} />
           <h2>メタデータ選択</h2>
         </div>
         <button className="reset-btn" onClick={resetFilters}>
-          <RotateCcw size={16} />
+          <RotateCcw size={14} />
           リセット
         </button>
       </div>
@@ -142,10 +142,10 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
       <style>{`
         .filters-container {
           background: var(--bg-primary);
-          border-radius: var(--radius-md);
-          padding: 20px;
-          margin-bottom: 20px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          border-radius: 6px;
+          padding: 12px;
+          margin-bottom: 12px;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
           border: 1px solid var(--border);
         }
 
@@ -153,13 +153,13 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 16px;
+          margin-bottom: 12px;
         }
 
         .header-content {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
         }
 
         .header-content svg {
@@ -169,33 +169,51 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .filters-header h2 {
           margin: 0;
           color: var(--text-primary);
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 600;
+        }
+
+        .reset-btn {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 8px;
+          background: #e74c3c;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 11px;
+          transition: background-color 0.2s ease;
+        }
+
+        .reset-btn:hover {
+          background: #c0392b;
         }
 
         .filters-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 16px;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
         }
 
         .filter-group {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 4px;
         }
 
         .filter-group label {
           font-weight: 500;
           color: var(--text-secondary);
-          font-size: 12px;
+          font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
         .polishing-controls {
           display: flex;
-          gap: 8px;
+          gap: 4px;
           align-items: center;
         }
 
@@ -206,19 +224,19 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .range-indicator {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 2px;
           flex: 1;
         }
 
         .range-indicator span {
           font-weight: 500;
           color: var(--text-secondary);
-          font-size: 12px;
+          font-size: 10px;
         }
 
         .range-controls {
           display: flex;
-          gap: 8px;
+          gap: 4px;
           align-items: center;
         }
 
@@ -229,11 +247,11 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .separator {
           color: var(--text-secondary);
           font-weight: 500;
-          font-size: 12px;
+          font-size: 10px;
         }
 
         .range-preview {
-          font-size: 10px;
+          font-size: 9px;
           color: var(--text-muted);
           font-style: italic;
           margin-top: 2px;
@@ -243,17 +261,17 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .checkbox-group {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 6px;
         }
 
         .checkbox-item {
           display: flex;
           align-items: center;
-          gap: 4px;
-          font-size: 12px;
+          gap: 2px;
+          font-size: 10px;
           cursor: pointer;
-          padding: 4px 6px;
-          border-radius: 4px;
+          padding: 2px 4px;
+          border-radius: 3px;
           transition: background-color 0.2s ease;
         }
 
@@ -264,7 +282,7 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         .checkbox-item input[type="checkbox"] {
           margin: 0;
           cursor: pointer;
-          transform: scale(0.9);
+          transform: scale(0.8);
         }
 
         .checkbox-label {
@@ -274,95 +292,31 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
         }
 
         input, select {
-          padding: 8px 12px;
+          padding: 4px 6px;
           border: 1px solid var(--border);
-          border-radius: var(--radius-sm);
-          font-size: 14px;
+          border-radius: 3px;
+          font-size: 11px;
           transition: all 0.2s ease;
           background: white;
           color: var(--text-primary);
+          height: 24px;
         }
 
         input:focus, select:focus {
           outline: none;
           border-color: var(--primary);
-          box-shadow: 0 0 0 2px var(--primary-light);
+          box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
         }
 
-        .reset-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 16px;
-          background: var(--danger);
-          color: white;
-          border: none;
-          border-radius: var(--radius-sm);
-          cursor: pointer;
-          font-weight: 500;
-          font-size: 12px;
-          transition: all 0.2s ease;
+        input::placeholder {
+          color: var(--text-muted);
+          opacity: 0.8;
         }
 
-        .reset-btn:hover {
-          background: var(--danger-dark);
-          transform: translateY(-1px);
-        }
-
-        :root {
-          --bg-primary: #ffffff;
-          --bg-secondary: #f8fafc;
-          --bg-tertiary: #f1f5f9;
-          --text-primary: #1e293b;
-          --text-secondary: #475569;
-          --text-muted: #64748b;
-          --border: #e2e8f0;
-          --primary: #3b82f6;
-          --primary-light: rgba(59, 130, 246, 0.1);
-          --danger: #ef4444;
-          --danger-dark: #dc2626;
-          --radius-sm: 4px;
-          --radius-md: 8px;
-          --radius-xl: 16px;
-        }
-
-        @media (max-width: 1024px) {
-          .filters-container {
-            padding: 16px;
-          }
-
-          .filters-grid {
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-          }
-
-          .filters-header h2 {
-            font-size: 16px;
-          }
-        }
-
+        /* レスポンシブ対応 */
         @media (max-width: 768px) {
-          .filters-container {
-            padding: 12px;
-          }
-
           .filters-grid {
             grid-template-columns: 1fr;
-            gap: 12px;
-          }
-
-          .polishing-controls {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .range-controls {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .checkbox-group {
-            grid-template-columns: repeat(2, 1fr);
           }
         }
       `}</style>
