@@ -111,6 +111,12 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
     return value;
   };
 
+  const formatTime = (timeStr: string): string => {
+    if (!timeStr || timeStr === '' || timeStr === '-') return '-';
+    // 12:30:00 → 12:30 (秒を除去)
+    return timeStr.replace(/:\d{2}$/, '');
+  };
+
   const RecordFormDetail = ({ record }: { record: KojiRecord }) => (
     <tr className="detail-row">
       <td colSpan={11}>
@@ -172,7 +178,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                   <td className="data-cell">-</td>
                 </tr>
                 <tr>
-                  <td className="time-cell">-</td>
+                   <td className="time-cell">{formatTime(record.time_2_3h_check)}</td>
                   <td className="operation-cell">2~3h後点検</td>
                   <td className="data-cell">{formatValue(record.temp_2_3h_check)}</td>
                   <td className="data-cell">-</td>
@@ -196,7 +202,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                   <td className="data-cell">{formatValue(record.airflow_stage3)}</td>
                 </tr>
                 <tr>
-                  <td className="time-cell">-</td>
+                  <td className="time-cell">{formatTime(record.time_before_handling)}</td>
                   <td className="operation-cell">手入れ前</td>
                   <td className="data-cell">{formatValue(record.temp_before_handling)}</td>
                   <td className="data-cell">{formatValue(record.ventilation_before_handling)}</td>
@@ -604,12 +610,13 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
           border-collapse: collapse;
           border: 2px solid var(--text-primary);
           font-size: 13px;
+          table-layout: fixed;  /* この1行を追加 */
         }
 
         .record-table th,
         .record-table td {
           border: 1px solid var(--text-primary);
-          padding: 8px 6px;
+          padding: 4px 2px;
           text-align: center;
         }
 
@@ -619,10 +626,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
           font-size: 11px;
         }
 
-        .time-col { width: 50px; }
-        .operation-col { width: 100px; }
-        .temp-col { width: 60px; }
-        .control-col { width: 80px; }
+.time-col { width: 25px; }
+.operation-col { width: 75px; }
+.temp-col { width: 45px; }
+.control-col { width: 35px; }
 
         .time-cell {
           background: var(--bg-secondary);
@@ -819,10 +826,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
             font-size: 9px;
           }
 
-          .time-col { width: 40px; }
-          .operation-col { width: 80px; }
-          .temp-col { width: 50px; }
-          .control-col { width: 60px; }
+          .time-col { width: 20px; }
+          .operation-col { width: 60px; }
+          .temp-col { width: 35px; }
+          .control-col { width: 25px; }
         }
       `}</style>
     </div>

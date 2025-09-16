@@ -211,6 +211,45 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({ record, onClose }) => 
           font-size: 14px;
         }
 
+        /* iPad専用メディアクエリ（768px〜1024px） */
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .detail-panel {
+            width: 90%;
+            max-width: 700px;
+            max-height: 80%;
+          }
+
+          .panel-header {
+            padding: 16px 20px;
+          }
+
+          .panel-header h2 {
+            font-size: 18px;
+          }
+
+          .panel-content {
+            padding: 20px;
+            font-size: 14px;
+          }
+
+          .detail-section h3 {
+            font-size: 16px;
+          }
+
+          .detail-content {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+          }
+
+          .label {
+            font-size: 13px;
+          }
+
+          .value {
+            font-size: 13px;
+          }
+        }
+
         @media (max-width: 768px) {
           .detail-panel {
             width: 95%;
