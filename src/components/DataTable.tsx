@@ -835,6 +835,45 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
   text-align: center !important;  /* 操作列も中央揃え */
   padding-left: 2px !important;   /* 左padding削除 */
 }
+
+css/* テーブル全体を流動的に調整 */
+.data-table {
+  width: 100%;
+  table-layout: auto;
+  font-size: clamp(9px, 2vw, 14px); /* 画面幅に応じて自動調整 */
+}
+
+.data-table th,
+.data-table td {
+  padding: clamp(1px, 0.5vw, 8px) clamp(1px, 0.3vw, 6px);
+  font-size: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0; /* flexibleな幅調整 */
+}
+
+/* コンテナも流動的に */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* record-tableも同様に */
+.record-table {
+  width: 100%;
+  table-layout: auto;
+  font-size: clamp(8px, 1.5vw, 13px);
+}
+
+.record-table th,
+.record-table td {
+  padding: clamp(1px, 0.3vw, 4px) clamp(1px, 0.2vw, 2px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
       `}</style>
     </div>
   );
