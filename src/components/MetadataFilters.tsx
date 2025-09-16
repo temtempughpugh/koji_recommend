@@ -499,6 +499,86 @@ export const MetadataFilters: React.FC<MetadataFiltersProps> = ({
             width: 100%;
           }
         }
+          /* 2段レイアウト + 文字サイズ改善 */
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3列レイアウト */
+  grid-template-rows: auto auto; /* 2行レイアウト */
+  gap: 16px 20px;
+  grid-template-areas: 
+    "variety origin polishing"
+    "weight weight sheets";
+}
+
+.filter-group:nth-child(1) { grid-area: variety; }   /* 品種 */
+.filter-group:nth-child(2) { grid-area: origin; }    /* 産地 */
+.filter-group:nth-child(3) { grid-area: polishing; } /* 精米歩合 */
+.filter-group:nth-child(4) { grid-area: weight; }    /* 重量範囲 */
+.filter-group:nth-child(5) { grid-area: sheets; }    /* 枚数 */
+
+/* 文字サイズとコンポーネントサイズを大きく */
+.filter-group label {
+  font-size: 16px !important;  /* 11px→16px */
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+input, select {
+  padding: 10px 12px !important;  /* 6px→10px */
+  font-size: 16px !important;     /* 11px→16px */
+  height: 44px !important;        /* 32px→44px */
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+select {
+  min-width: 140px !important;    /* 100px→140px */
+}
+
+input[type="number"] {
+  width: 90px !important;         /* 70px→90px */
+}
+
+/* 枚数チェックボックスのサイズはそのまま維持 */
+.checkbox-item {
+  padding: 6px 10px;
+  font-size: 14px;
+  /* 既存のサイズを維持 */
+}
+
+/* タブレット用調整 */
+@media (max-width: 1024px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+      "variety origin"
+      "polishing weight"
+      "sheets sheets";
+  }
+}
+
+/* スマホ用調整 */
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "variety"
+      "origin"
+      "polishing"
+      "weight"
+      "sheets";
+  }
+  
+  .filter-group label {
+    font-size: 14px !important;
+  }
+  
+  input, select {
+    font-size: 14px !important;
+    height: 40px !important;
+  }
+}
       `}</style>
     </div>
   );

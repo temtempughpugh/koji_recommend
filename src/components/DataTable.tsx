@@ -911,6 +911,54 @@ css/* テーブル全体を流動的に調整 */
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch !important;
 }
+.record-table {
+  font-size: 14px !important;  /* 9px→14pxに拡大 */
+  table-layout: auto !important;
+}
+
+.record-table th,
+.record-table td {
+  padding: 6px 4px !important;  /* 2px→6pxに拡大 */
+  font-size: 14px !important;   /* 9px→14pxに拡大 */
+  text-align: center !important;
+}
+
+.record-table th {
+  font-size: 12px !important;   /* ヘッダーは少し小さく */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.data-cell {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 14px !important;   /* 数値も同じサイズ */
+}
+
+/* タブレット用調整 */
+@media (max-width: 1024px) {
+  .record-table {
+    font-size: 13px !important;
+  }
+  
+  .record-table th,
+  .record-table td {
+    font-size: 13px !important;
+    padding: 5px 3px !important;
+  }
+}
+
+/* スマホ用調整 */
+@media (max-width: 768px) {
+  .record-table {
+    font-size: 12px !important;
+  }
+  
+  .record-table th,
+  .record-table td {
+    font-size: 12px !important;
+    padding: 4px 2px !important;
+  }
+}
       `}</style>
     </div>
   );
