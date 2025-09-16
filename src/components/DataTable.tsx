@@ -885,6 +885,32 @@ css/* テーブル全体を流動的に調整 */
   width: auto !important;
   min-width: 0 !important;
 }
+  .data-table th {
+  white-space: normal !important;  /* 折り返し許可 */
+  line-height: 1.2 !important;
+  height: auto !important;
+  vertical-align: top !important;
+  padding: 4px 2px !important;
+}
+  .record-table {
+  min-width: auto !important;     /* 固定最小幅を削除 */
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+.record-table th,
+.record-table td {
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 2px 1px !important;
+  font-size: 9px !important;
+}
+
+.record-table-container {
+  width: 100% !important;         /* fit-contentを削除 */
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
       `}</style>
     </div>
   );
