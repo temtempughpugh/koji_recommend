@@ -570,6 +570,42 @@ th {
 .frequent-item {
   font-size: clamp(8px, 1.2vw, 9px);
 }
+  .frequent-item {
+  background: #e9ecef;
+  padding: 2px 4px;  /* paddingを増やす */
+  border-radius: 3px;
+  font-size: 11px !important;  /* 8px→11pxに拡大 */
+  font-family: monospace;
+  color: #495057;
+  white-space: nowrap;
+  line-height: 1.3;  /* 行間も少し広げる */
+  margin: 1px;  /* 周囲に余白追加 */
+}
+
+.frequent-values-horizontal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;  /* アイテム間の間隔を広げる */
+  justify-content: center;
+  align-items: center;
+  min-height: 30px;  /* 最小高さを確保 */
+}
+
+/* タブレット用調整 */
+@media (max-width: 1024px) {
+  .frequent-item {
+    font-size: 10px !important;
+    padding: 2px 3px;
+  }
+}
+
+/* スマホ用調整 */
+@media (max-width: 768px) {
+  .frequent-item {
+    font-size: 9px !important;
+    padding: 1px 2px;
+  }
+}
       `}</style>
     </div>
   );
