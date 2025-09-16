@@ -541,6 +541,35 @@ export const SummaryStatsComponent: React.FC<SummaryStatsProps> = ({ stats, data
             font-size: 9px;
           }
         }
+          table {
+  width: 100% !important;
+  min-width: auto !important;  /* 固定最小幅を削除 */
+  table-layout: auto !important;
+  border-collapse: collapse;
+  background: white;
+  font-size: clamp(10px, 2vw, 14px); /* 画面幅に応じて調整 */
+}
+
+th, td {
+  padding: clamp(2px, 0.5vw, 8px) clamp(1px, 0.3vw, 6px);
+  text-align: left;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0; /* 均等幅分割 */
+}
+
+th {
+  font-size: clamp(9px, 1.5vw, 11px);
+  white-space: normal !important; /* ヘッダー折り返し許可 */
+  line-height: 1.2;
+}
+
+.frequent-item {
+  font-size: clamp(8px, 1.2vw, 9px);
+}
       `}</style>
     </div>
   );
