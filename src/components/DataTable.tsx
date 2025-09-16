@@ -874,6 +874,17 @@ css/* テーブル全体を流動的に調整 */
   overflow: hidden;
   text-overflow: ellipsis;
 }
+  /* 既存の固定幅設定をすべて削除 */
+.data-table {
+  min-width: auto !important;  /* 固定最小幅を削除 */
+  width: 100% !important;
+}
+
+/* nth-childの固定幅も削除 */
+.data-table th, .data-table td {
+  width: auto !important;
+  min-width: 0 !important;
+}
       `}</style>
     </div>
   );
