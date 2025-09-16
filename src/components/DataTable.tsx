@@ -558,12 +558,20 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
         }
 
         .record-form-container {
-          padding: 24px;
-          background: white;
-          margin: 8px;
-          border-radius: var(--radius-md);
-          border: 1px solid var(--border);
-        }
+  padding: 24px;
+  background: white;
+  margin: 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;  /* 左寄せ */
+}
+
+.record-table-container {
+  width: fit-content !important;  /* 内容に合わせる */
+  overflow-x: visible !important;
+}
 
         .basic-info-section {
           margin-bottom: 24px;
@@ -605,26 +613,14 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
           overflow-x: auto;
         }
 
-        .record-table {
-          width: 100%;
-          border-collapse: collapse;
-          border: 2px solid var(--text-primary);
-          font-size: 13px;
-          table-layout: fixed;  /* この1行を追加 */
-        }
-
-        .record-table th,
-        .record-table td {
-          border: 1px solid var(--text-primary);
-          padding: 4px 2px;
-          text-align: center;
-        }
-
-        .record-table th {
-          background: var(--bg-tertiary);
-          font-weight: 600;
-          font-size: 11px;
-        }
+       .record-table {
+  table-layout: auto !important;  /* 固定レイアウトを解除 */
+}
+       .record-table th {
+  font-size: 9px !important;     /* ヘッダー文字を小さく */
+  padding: 2px 1px !important;   /* ヘッダー余白を最小に */
+  line-height: 1.1 !important;   /* 行間を詰める */
+}
 
 .time-col { width: 25px; }
 .operation-col { width: 75px; }
@@ -831,6 +827,14 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
           .temp-col { width: 35px; }
           .control-col { width: 25px; }
         }
+          .record-table td {
+  text-align: center !important;
+}
+
+.record-table .operation-cell {
+  text-align: center !important;  /* 操作列も中央揃え */
+  padding-left: 2px !important;   /* 左padding削除 */
+}
       `}</style>
     </div>
   );
