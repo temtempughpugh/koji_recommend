@@ -579,6 +579,15 @@ input[type="number"] {
     height: 40px !important;
   }
 }
+  .filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3列 */
+  grid-template-rows: auto auto; /* 2行のみ */
+  gap: 16px 20px;
+  grid-template-areas: 
+    "variety origin polishing"
+    "weight sheets ."; /* 重量範囲と枚数を2段目の左2つに配置 */
+}
       `}</style>
     </div>
   );

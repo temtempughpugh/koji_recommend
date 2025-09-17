@@ -606,6 +606,31 @@ th {
     padding: 1px 2px;
   }
 }
+  .stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.stats-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* 除湿機チェックボックスと他のコントロールの間隔 */
+}
+
+.toggle-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0; /* 独立した余白を削除 */
+}
+
+/* 除湿機チェックボックスとトグルコントロールを同じ行に配置 */
+.dehumidifier-filter {
+  margin-right: 20px;
+}
       `}</style>
     </div>
   );

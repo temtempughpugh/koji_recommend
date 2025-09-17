@@ -959,6 +959,63 @@ css/* テーブル全体を流動的に調整 */
     padding: 4px 2px !important;
   }
 }
+  /* デスクトップ */
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px 20px;
+  grid-template-areas: 
+    "variety origin polishing"
+    "weight sheets .";
+}
+
+/* iPad専用（1024px以下） */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr; /* 2列に変更 */
+    grid-template-rows: auto auto auto; /* 3行必要 */
+    grid-template-areas: 
+      "variety origin"
+      "polishing weight"
+      "sheets ."; /* 枚数は3行目に */
+    gap: 12px 16px;
+  }
+  
+  .filter-group label {
+    font-size: 14px !important;
+  }
+  
+  input, select {
+    font-size: 14px !important;
+    height: 40px !important;
+  }
+}
+  /* デスクトップ */
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* iPad専用 */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .stats-header {
+    flex-direction: column; /* 縦並びにする */
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .dehumidifier-filter {
+    align-self: center; /* 中央配置 */
+    margin: 0;
+  }
+  
+  .dehumidifier-filter span {
+    font-size: 14px; /* 文字サイズ確保 */
+  }
+}
       `}</style>
     </div>
   );
