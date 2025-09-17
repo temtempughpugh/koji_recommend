@@ -991,29 +991,65 @@ css/* テーブル全体を流動的に調整 */
     height: 40px !important;
   }
 }
-  /* デスクトップ */
+  /* iPad専用レイアウト - 枚数を横並びにして段数削減 */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: 
+      "variety origin"
+      "polishing weight"
+      "sheets sheets"; /* 枚数を両列にまたがらせる */
+  }
+  
+  /* 枚数チェックボックスを横一列に強制 */
+  .checkbox-group {
+    display: flex !important;
+    flex-wrap: nowrap !important; /* 折り返し禁止 */
+    gap: 8px !important;
+    justify-content: flex-start !important;
+  }
+  
+  .checkbox-item {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important; /* 縮小禁止 */
+  }
+}
+  /* 要約データのヘッダー部分を1行にまとめる */
 .stats-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px; /* 余白削減 */
 }
 
-/* iPad専用 */
+.stats-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* toggle-controlsを同じ行に移動 */
+.toggle-controls {
+  display: flex;
+  align-items: center; 
+  gap: 12px;
+  margin: 0; /* 独立余白削除 */
+}
+
+/* iPad用 */
 @media (max-width: 1024px) and (min-width: 769px) {
   .stats-header {
-    flex-direction: column; /* 縦並びにする */
-    align-items: stretch;
-    gap: 12px;
+    flex-direction: row; /* 横並び維持 */
+    flex-wrap: wrap;
+    gap: 8px;
   }
   
-  .dehumidifier-filter {
-    align-self: center; /* 中央配置 */
-    margin: 0;
-  }
-  
-  .dehumidifier-filter span {
-    font-size: 14px; /* 文字サイズ確保 */
+  .toggle-controls label {
+    font-size: 12px;
+    white-space: nowrap;
   }
 }
       `}</style>
